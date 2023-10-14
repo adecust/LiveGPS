@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
         override fun onProviderEnabled(provider: String) {}
         override fun onProviderDisabled(provider: String) {}
-        
+
     }
 
     //MARK- LİFECYCLE
@@ -46,14 +46,17 @@ class MainActivity : AppCompatActivity() {
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+
         }
 
     // UPDATE LATİTUDE AND LONGİTUDE
-        locationManager.requestLocationUpdates(
-            LocationManager.GPS_PROVIDER,
-            5000, 0f, locationListener
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ){
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                5000, 0f, locationListener
+            )
+        }
 
-        )
     }
     fun fetchAll(){
         apiService.getLastLocations().enqueue(object : Callback<List<LocationModel>>{
@@ -73,7 +76,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<List<LocationModel>>, t: Throwable) {
-
+                Log.e("aaa",",Error  1  atıldı" + t)
             }
 
         })
@@ -85,7 +88,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e("aaa",",Error atıldı")
+                Log.e("aaa",",Error atıldı" + t)
             }
 
         })
