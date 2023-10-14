@@ -13,6 +13,7 @@ import android.widget.TextView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.stream.Collectors
 
 
 class MainActivity : AppCompatActivity() {
@@ -26,9 +27,9 @@ class MainActivity : AppCompatActivity() {
             val latitude = location.latitude
             val longitude = location.longitude
             // Konumu ekrandaki TextView'a yazdırabilirsiniz
-            locationText.text = "Konum: Enlem $latitude, \n Boylam $longitude"
-            val car1 :LocationModel= LocationModel(31,latitude,longitude)
+            val car1 :LocationModel= LocationModel(14,latitude,longitude)
             postData(car1)
+            fetchAll()
         }
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
         override fun onProviderEnabled(provider: String) {}
@@ -46,11 +47,12 @@ class MainActivity : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
         }
-        fetchAll()
+
     // UPDATE LATİTUDE AND LONGİTUDE
         locationManager.requestLocationUpdates(
             LocationManager.GPS_PROVIDER,
             5000, 0f, locationListener
+
         )
     }
     fun fetchAll(){
@@ -61,9 +63,11 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful){
                     val data=response.body()
                     if(data !=null){
-                        Log.e("aaaa",data[0].toString())
+                        val collect = data.stream().map {
+                            "DeviceId: ${it.deviceId} latitude ${it.latitude} longitude ${it.longitude}"
+                        }.collect(Collectors.joining("\n"))
+                        locationText.text=collect
                     }
-
                 }
 
             }
